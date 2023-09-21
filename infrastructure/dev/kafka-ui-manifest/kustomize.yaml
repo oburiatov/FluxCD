@@ -1,0 +1,15 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: kafka-ui-kustomization
+  namespace: infra
+spec:
+  interval: 1m0s
+  path: ./KafkaUI-manifest
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: kafka-ui-app
+    namespace: infra
+  targetNamespace: infra
+  serviceAccountName: flux

@@ -1,0 +1,8 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: kafka-ui-helm-repo
+  namespace: infra
+spec:
+  interval: 1m  # Polling interval for checking for updates
+  url: https://provectus.github.io/kafka-ui-charts  # URL of your Helm repository

@@ -1,0 +1,56 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- gotk-components.yaml
+- gotk-sync.yaml
+patches:
+# Remove seccompProfile from the flux Deployments when running on OpenShift
+- target:
+    kind: Deployment
+    labelSelector: app.kubernetes.io/part-of=flux
+  patch: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: all
+    spec:
+      template:
+        spec:
+          containers:
+            - name: manager
+              securityContext:
+                runAsUser: 65534
+                seccompProfile:
+                  $patch: delete
+# OpenShift will overwrite these Namespace labels
+# Remove them from the flux definition and leave them to openshift.
+- target:
+    kind: Namespace
+    labelSelector: app.kubernetes.io/part-of=flux
+  patch: |-
+    - op: remove
+      path: /metadata/labels/pod-security.kubernetes.io~1warn
+    - op: remove
+      path: /metadata/labels/pod-security.kubernetes.io~1warn-version
+# Enforce tenant isolation
+- target:
+    kind: Deployment
+    name: "(kustomize-controller|helm-controller|notification-controller|image-reflector-controller|image-automation-controller)"
+  patch: |
+    - op: add
+      path: /spec/template/spec/containers/0/args/0
+      value: --no-cross-namespace-refs=true
+- target:
+    kind: Deployment
+    name: "(kustomize-controller|helm-controller)"
+  patch: |
+    - op: add
+      path: /spec/template/spec/containers/0/args/0
+      value: --default-service-account=default
+- target:
+    kind: Kustomization
+    name: "flux-system"
+  patch: |
+    - op: add
+      path: /spec/serviceAccountName
+      value: kustomize-controller

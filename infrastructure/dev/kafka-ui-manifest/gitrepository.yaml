@@ -1,0 +1,12 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: kafka-ui-app
+  namespace: infra
+spec:
+  interval: 1m0s
+  ref:
+    branch: dev
+  secretRef:
+    name: flux-deploy-authentication
+  url: https://gitlab.example.com/okd/apps/deployments.git

@@ -1,0 +1,30 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: kafka-ui-git-release
+  namespace: infra
+spec:
+  interval: 1m
+  chart:
+    spec:
+      chart: ./KafkaUI-helmchart
+      sourceRef:
+        kind: GitRepository
+        name: kafka-ui-git-app
+        namespace: infra
+      interval: 1m
+  serviceAccountName: flux
+  values:
+    replicaCount: 0
+    existingConfigMap: kafka-ui-helm-env
+    resources:
+      limits:
+        cpu: 200m
+        memory: 512Mi
+      requests:
+        cpu: 200m
+        memory: 256Mi
+    image:
+      registry: gitlab.example.com:5000
+      repository: okd/apps/deployments/kafka-ui-image
+    imagePullSecrets: [{ name: gitlab-docker-auth }]

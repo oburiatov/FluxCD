@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+
+#kafka-ui - GitRepository + kubemanifests
+  - ./kafka-ui-manifest/kustomize.yaml
+  - ./kafka-ui-manifest/gitrepository.yaml
+
+#kafka-ui-helm - HelmRepository(Helm) + HelmRelease
+  - ./kafka-ui-helm/kustomize.yaml
+  - ./kafka-ui-helm/gitrepository.yaml
+  - ./kafka-ui-helm/helmrepository.yaml
+  - ./kafka-ui-helm/helmrelease.yaml
+
+#kafka-ui-oci - HelmRepository(OCI) + HelmRelease
+  - ./kafka-ui-oci/helmrepository.yaml
+  - ./kafka-ui-oci/helmrelease.yaml
+
+#kafka-ui-git - GitRepository + HelmRelease
+  - ./kafka-ui-git/gitrepository.yaml
+  - ./kafka-ui-git/helmrelease.yaml
+  # - ./kafka-ui-git/kustomize.yaml
